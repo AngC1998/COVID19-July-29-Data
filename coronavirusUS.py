@@ -2,6 +2,7 @@ import numpy as np
 import pandas as pd
 import matplotlib.pylab as plt
 import csv
+from scipy import stats
 from sklearn.linear_model import LinearRegression
 
 states_dictionary = {}
@@ -110,14 +111,8 @@ for entry in overall_array:
             arr = overall_dictionary[overall_columns[i]]
             arr.append(int(entry[i]))
             overall_dictionary[overall_columns[i]] = arr
-print(overall_dictionary)
+#print(overall_dictionary)
 df = pd.DataFrame(data=overall_dictionary)
-#print(df)
-#print(df.shape)
-#print(df.head)
-#print(df.columns)
-#print(df.nunique(axis=0))
-#print(df.describe())
 df_cleaned = df.copy()
 df_cleaned = df_cleaned.copy().drop(['date', 'fips', 'landarea', 'waterarea'], axis=1)
 df_cleaned = df_cleaned[df_cleaned['cases'] > 0]
@@ -128,10 +123,60 @@ print(df_cleaned)
 #print(df_cleaned.columns)
 #print(df_cleaned.nunique(axis=0))
 #print(df_cleaned.describe())
-df_cleaned.plot(kind='scatter', x='pop', y='cases')
-pop_arr_orig = overall_dictionary['pop']
-cases_arr_orig = overall_dictionary['cases']
-pop_arr = np.asarray(overall_dictionary['pop'])
-cases_arr = np.asarray(overall_dictionary['cases'])
-print(pop_arr)
-print(cases_arr)
+#df_cleaned.plot(kind='scatter', x='pop', y='cases')
+x = df_cleaned['pop']
+y = df_cleaned['cases']
+slope, intercept, r_value, p_value, std_err = stats.linregress(x, y)
+print('State population vs number of confirmed cases')
+print('Slope: '+str(slope))
+print('Intercept: '+str(intercept))
+print('Standard Error: '+str(std_err))
+numpy_x = np.asarray(x).reshape(-1, 1)
+numpy_y = np.asarray(y).reshape(-1, 1)
+linear_regressor = LinearRegression()
+linear_regressor.fit(numpy_x, numpy_y)
+y_pred = linear_regressor.predict(numpy_x)
+plt.scatter(numpy_x, numpy_y)
+plt.plot(x, y_pred, color = 'red')
+plt.xlabel('State population')
+plt.ylabel('Number of confimred cases')
+plt.title('State population vs number of confirmed cases')
+plt.show()
+
+x_two = df_cleaned['totalarea']
+y_two = df_cleaned['cases']
+slope, intercept, r_value, p_value, std_err = stats.linregress(x_two, y_two)
+print('Total land area vs number of confirmed cases')
+print('Slope: '+str(slope))
+print('Intercept: '+str(intercept))
+print('Standard Error: '+str(std_err))
+numpy_x_two = np.asarray(x_two).reshape(-1, 1)
+numpy_y_two = np.asarray(y_two).reshape(-1, 1)
+linear_regressor_two = LinearRegression()
+linear_regressor_two.fit(numpy_x_two, numpy_y_two)
+y_pred_two = linear_regressor_two.predict(numpy_x_two)
+plt.scatter(numpy_x_two, numpy_y_two)
+plt.plot(x_two, y_pred_two, color = 'red')
+plt.xlabel('Total land area')
+plt.ylabel('Number of confimred cases')
+plt.title('Total land area vs number of confirmed cases')
+plt.show()
+
+x_three = df_cleaned['density']
+y_three = df_cleaned['cases']
+slope, intercept, r_value, p_value, std_err = stats.linregress(x_three, y_three)
+print('Density vs number of confirmed cases')
+print('Slope: '+str(slope))
+print('Intercept: '+str(intercept))
+print('Standard Error: '+str(std_err))
+numpy_x_three = np.asarray(x_three).reshape(-1, 1)
+numpy_y_three = np.asarray(y_three).reshape(-1, 1)
+linear_regressor_three = LinearRegression()
+linear_regressor_three.fit(numpy_x_three, numpy_y_three)
+y_pred_three = linear_regressor_three.predict(numpy_x_three)
+plt.scatter(numpy_x_three, numpy_y_three)
+plt.plot(x_three, y_pred_three, color = 'red')
+plt.xlabel('Density')
+plt.ylabel('Number of confimred cases')
+plt.title('Density vs number of confirmed cases')
+plt.show()
