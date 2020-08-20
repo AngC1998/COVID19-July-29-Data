@@ -75,4 +75,24 @@ plt.ylabel('Number of confimred cases')
 plt.title('Density vs number of confirmed cases')
 plt.show()
 
-print(combined)
+state_university_dict = {}
+high_ranking_dict = {}
+columns = []
+
+with open('UniversityCases.csv') as university_cases:
+    csv_reader = csv.reader(university_cases, delimiter=',')
+    index = 0
+    for row in csv_reader:
+        if index > 0:
+            case = int(row[1])
+            state = row[2]
+            if (state not in state_university_dict) and (state not in high_ranking_dict):
+                state_university_dict[state] = 1
+                high_ranking_dict[state] = index
+            else:
+                entry = state_university_dict[state]
+                state_university_dict[state] = entry + 1
+        index += 1
+
+print(state_university_dict)
+print(high_ranking_dict)
