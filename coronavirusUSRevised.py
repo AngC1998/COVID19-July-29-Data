@@ -107,5 +107,6 @@ with open('UniversityCases.csv') as university_cases:
         index += 1
 
 university_cases_df = pd.DataFrame(data=state_university_dict)
+university_cases_df = university_cases_df.set_index('state')
 for i in range(0, len(university_cases_df)):
     print(university_cases_df.iloc[i])
