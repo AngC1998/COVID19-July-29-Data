@@ -17,6 +17,7 @@ combined['Pop'].fillna(0, inplace=True)
 combined = combined[combined['TotalArea'] > 0]
 combined = combined[combined['Density'] > 0]
 combined = combined[combined['Pop'] > 0]
+print(combined)
 
 x = combined['Pop']
 y = combined['cases']
@@ -76,23 +77,35 @@ plt.title('Density vs number of confirmed cases')
 plt.show()
 
 state_university_dict = {}
-high_ranking_dict = {}
 columns = []
 
 with open('UniversityCases.csv') as university_cases:
     csv_reader = csv.reader(university_cases, delimiter=',')
     index = 0
     for row in csv_reader:
-        if index > 0:
+        if index == 0:
+            state_university_dict['state'] = []
+            state_university_dict['number of universities'] = []
+            state_university_dict['highest ranking'] = []
+            state_university_dict['highest university cases'] = []
+            state_university_dict['cases'] = []
+        elif index > 0:
             case = int(row[1])
             state = row[2]
-            if (state not in state_university_dict) and (state not in high_ranking_dict):
-                state_university_dict[state] = 1
-                high_ranking_dict[state] = index
+            if state not in state_university_dict['state']:
+                cases = 0
+                if state != 'Washington, D.C':
+                    cases = combined.loc[state]['cases']
+                    state_university_dict['state'].append(state)
+                    state_university_dict['number of universities'].append(1)
+                    state_university_dict['highest ranking'].append(index)
+                    state_university_dict['highest university cases'].append(case)
+                    state_university_dict['cases'].append(cases)
             else:
-                entry = state_university_dict[state]
-                state_university_dict[state] = entry + 1
+                index = state_university_dict['state'].index(state)
+                state_university_dict['number of universities'][index] += 1
         index += 1
 
-print(state_university_dict)
-print(high_ranking_dict)
+university_cases_df = pd.DataFrame(data=state_university_dict)
+for i in range(0, len(university_cases_df)):
+    print(university_cases_df.iloc[i])
