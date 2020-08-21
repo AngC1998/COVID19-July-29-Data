@@ -18,6 +18,7 @@ combined = combined[combined['TotalArea'] > 0]
 combined = combined[combined['Density'] > 0]
 combined = combined[combined['Pop'] > 0]
 print(combined)
+print('\n')
 
 x = combined['Pop']
 y = combined['cases']
@@ -26,6 +27,7 @@ print('State population vs number of confirmed cases')
 print('Slope: '+str(slope))
 print('Intercept: '+str(intercept))
 print('Standard Error: '+str(std_err))
+print('\n')
 numpy_x = np.asarray(x).reshape(-1, 1)
 numpy_y = np.asarray(y).reshape(-1, 1)
 linear_regressor = LinearRegression()
@@ -38,6 +40,12 @@ plt.ylabel('Number of confimred cases')
 plt.title('State population vs number of confirmed cases')
 plt.show()
 
+plt.scatter(x, y, s=y/1000, c=y, cmap="Blues", alpha=0.4, edgecolors='grey', linewidth=2)
+plt.xlabel('State population')
+plt.ylabel('Number of confimred cases')
+plt.title('State population vs number of confirmed cases')
+plt.show()
+
 x_two = combined['TotalArea']
 y_two = combined['cases']
 slope, intercept, r_value, p_value, std_err = stats.linregress(x_two, y_two)
@@ -45,6 +53,7 @@ print('Total land area vs number of confirmed cases')
 print('Slope: '+str(slope))
 print('Intercept: '+str(intercept))
 print('Standard Error: '+str(std_err))
+print('\n')
 numpy_x_two = np.asarray(x_two).reshape(-1, 1)
 numpy_y_two = np.asarray(y_two).reshape(-1, 1)
 linear_regressor_two = LinearRegression()
@@ -57,6 +66,12 @@ plt.ylabel('Number of confimred cases')
 plt.title('Total land area vs number of confirmed cases')
 plt.show()
 
+plt.scatter(x_two, y_two, s=y_two/1000, c=y_two, cmap="Blues", alpha=0.4, edgecolors='grey', linewidth=2)
+plt.xlabel('Total land area')
+plt.ylabel('Number of confimred cases')
+plt.title('Total land area vs number of confirmed cases')
+plt.show()
+
 x_three = combined['Density']
 y_three = combined['cases']
 slope, intercept, r_value, p_value, std_err = stats.linregress(x_three, y_three)
@@ -64,6 +79,7 @@ print('Density vs number of confirmed cases')
 print('Slope: '+str(slope))
 print('Intercept: '+str(intercept))
 print('Standard Error: '+str(std_err))
+print('\n')
 numpy_x_three = np.asarray(x_three).reshape(-1, 1)
 numpy_y_three = np.asarray(y_three).reshape(-1, 1)
 linear_regressor_three = LinearRegression()
@@ -71,6 +87,12 @@ linear_regressor_three.fit(numpy_x_three, numpy_y_three)
 y_pred_three = linear_regressor_three.predict(numpy_x_three)
 plt.scatter(numpy_x_three, numpy_y_three)
 plt.plot(x_three, y_pred_three, color = 'red')
+plt.xlabel('Density')
+plt.ylabel('Number of confimred cases')
+plt.title('Density vs number of confirmed cases')
+plt.show()
+
+plt.scatter(x_three, y_three, s=y_three/1000, c=y_three, cmap="Blues", alpha=0.4, edgecolors='grey', linewidth=2)
 plt.xlabel('Density')
 plt.ylabel('Number of confimred cases')
 plt.title('Density vs number of confirmed cases')
@@ -86,7 +108,6 @@ with open('UniversityCases.csv') as university_cases:
         if index == 0:
             state_university_dict['state'] = []
             state_university_dict['number of universities'] = []
-            state_university_dict['highest ranking'] = []
             state_university_dict['highest university cases'] = []
             state_university_dict['cases'] = []
         elif index > 0:
@@ -98,7 +119,6 @@ with open('UniversityCases.csv') as university_cases:
                     cases = combined.loc[state]['cases']
                     state_university_dict['state'].append(state)
                     state_university_dict['number of universities'].append(1)
-                    state_university_dict['highest ranking'].append(index)
                     state_university_dict['highest university cases'].append(case)
                     state_university_dict['cases'].append(cases)
             else:
@@ -108,5 +128,21 @@ with open('UniversityCases.csv') as university_cases:
 
 university_cases_df = pd.DataFrame(data=state_university_dict)
 university_cases_df = university_cases_df.set_index('state')
+'''
 for i in range(0, len(university_cases_df)):
     print(university_cases_df.iloc[i])
+'''
+
+university_df = pd.read_csv('UniversityCases.csv')
+state_cases = []
+for i in range(0, len(university_df)):
+    state = university_df.iloc[i][2]
+    if state != 'Washington, D.C':
+        cases = combined.loc[state]['cases']
+        state_cases.append(cases)
+    else:
+        state_cases.append(combined.loc['Virginia']['cases'])
+university_df['state cases'] = state_cases
+university_df = university_df.set_index(['State', 'School'])
+university_df = university_df.sort_index()
+print(university_df)
